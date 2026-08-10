@@ -143,10 +143,40 @@
     });
   }
 
+  /* Cadre rouge périmétrique.
+
+     Le mode édition modifie le site en production, en direct : chaque clic
+     écrit dans la base que voient les visiteurs. Un simple bandeau en haut
+     se perd dès qu'on descend dans la page — on croit alors consulter le
+     site alors qu'on est en train de l'écrire. Le cadre, lui, reste dans le
+     champ de vision quoi qu'il arrive.
+
+     `pointer-events: none` : le cadre est une information, pas un obstacle.
+     Sans cela il intercepterait les clics sur les bords de la page. */
+  function poserLeCadre() {
+    if (document.querySelector(".edito-cadre")) return;
+    var cadre = document.createElement("div");
+    cadre.className = "edito-cadre";
+    cadre.setAttribute("aria-hidden", "true");
+    cadre.innerHTML = '<span class="edito-cadre__etiquette">Mode édition — '
+                    + 'vos modifications sont publiées immédiatement</span>';
+    document.body.appendChild(cadre);
+  }
+
+  function retirerLeCadre() {
+    var cadre = document.querySelector(".edito-cadre");
+    if (cadre) cadre.remove();
+  }
+
   function basculer(nouvelEtat) {
     actif = nouvelEtat;
     document.body.classList.toggle("edito-actif", actif);
-    if (actif) marquerLesZones();
+    if (actif) {
+      poserLeCadre();
+      marquerLesZones();
+    } else {
+      retirerLeCadre();
+    }
   }
 
   /* Le site est trilingue. Le contenu géré depuis l'administration est la
@@ -201,10 +231,202 @@
           if (!actif) return;
           e.preventDefault();
           e.stopPropagation();
-          ouvrirEditeur(el, cle, champ);
+          // Un lien porte deux valeurs — le texte et l'adresse — qu'on ne
+          // peut pas saisir dans le flux de la page. Il garde donc le
+          // panneau. Tout le reste s'écrit là où il s'affiche.
+          if (champ === "link1" || champ === "link2") {
+            ouvrirEditeur(el, cle, champ);
+          } else {
+            editerSurPlace(el, cle, champ);
+          }
         });
       }
     });
+  }
+
+  /* --------------------------------------------------------------------- */
+  /* Édition à la volée : on écrit là où le texte s'affiche                 */
+  /* --------------------------------------------------------------------- */
+  /*
+     Le panneau latéral obligeait à taper dans une boîte, puis à deviner le
+     rendu. On écrit désormais dans la page elle-même : la typographie, la
+     largeur de colonne et les retours à la ligne sont ceux du visiteur.
+     C'est la seule façon de voir qu'un titre déborde sur deux lignes avant
+     de l'enregistrer.
+
+     Un seul champ à la fois. Échap annule, Ctrl+Entrée enregistre, et sortir
+     du champ enregistre aussi : personne ne doit perdre son texte pour avoir
+     cliqué à côté.
+  */
+  var enCours = null;
+
+  function editerSurPlace(el, cle, champ) {
+    if (enCours) return;
+
+    var riche = champ === "body";
+    var original = riche ? el.innerHTML : el.textContent;
+
+    el.setAttribute("contenteditable", "true");
+    el.classList.add("edito-zone--saisie");
+    el.setAttribute("spellcheck", "true");
+    el.focus();
+
+    var barre = construireBarre(el, riche);
+    enCours = { el: el, barre: barre, original: original, riche: riche };
+
+    // Curseur en fin de texte plutôt qu'au début : on vient le plus souvent
+    // compléter une phrase, rarement la réécrire depuis le premier mot.
+    var intervalle = document.createRange();
+    intervalle.selectNodeContents(el);
+    intervalle.collapse(false);
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(intervalle);
+
+    function surTouche(e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        annuler();
+      } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        enregistrer();
+      } else if (e.key === "Enter" && !riche) {
+        // Un sur-titre ou un titre tient sur une ligne : la touche Entrée y
+        // vaut « j'ai fini », pas « saut de ligne ».
+        e.preventDefault();
+        enregistrer();
+      }
+    }
+
+    function surSortie() {
+      // Un clic sur la barre d'outils fait perdre le focus au champ sans
+      // que l'utilisateur ait voulu terminer : on laisse passer un instant
+      // pour distinguer les deux gestes.
+      setTimeout(function () {
+        if (!enCours) return;
+        if (barre.contains(document.activeElement)) return;
+        if (document.activeElement === el) return;
+        enregistrer();
+      }, 120);
+    }
+
+    el.addEventListener("keydown", surTouche);
+    el.addEventListener("blur", surSortie);
+
+    function nettoyer() {
+      el.removeEventListener("keydown", surTouche);
+      el.removeEventListener("blur", surSortie);
+      el.removeAttribute("contenteditable");
+      el.removeAttribute("spellcheck");
+      el.classList.remove("edito-zone--saisie");
+      barre.remove();
+      enCours = null;
+    }
+
+    function annuler() {
+      if (riche) el.innerHTML = original; else el.textContent = original;
+      nettoyer();
+    }
+
+    function enregistrer() {
+      var valeur = riche ? el.innerHTML.trim() : el.textContent.trim();
+      if (valeur === (riche ? original.trim() : original.trim())) {
+        nettoyer();
+        return;
+      }
+      el.classList.add("edito-zone--envoi");
+      ecrire(cle, riche ? "body" : champ, valeur)
+        .then(function (reponse) {
+          el.classList.remove("edito-zone--envoi");
+          if (!reponse || !reponse.ok) {
+            // On remet le texte d'origine : laisser à l'écran une version
+            // que le serveur a refusée ferait croire qu'elle est en ligne.
+            if (riche) el.innerHTML = original; else el.textContent = original;
+            nettoyer();
+            signaler((reponse && reponse.erreur) || "Enregistrement refusé.", true);
+            return;
+          }
+          // Le serveur renvoie le texte tel qu'il l'a assaini : c'est lui
+          // qui fait foi, pas ce qui a été tapé.
+          if (riche) {
+            el.innerHTML = reponse.rendu;
+            el.classList.add("texte-riche");
+          } else {
+            el.textContent = reponse.rendu;
+          }
+          nettoyer();
+          signaler("Modification enregistrée.");
+        })
+        .catch(function () {
+          el.classList.remove("edito-zone--envoi");
+          if (riche) el.innerHTML = original; else el.textContent = original;
+          nettoyer();
+          signaler("Serveur injoignable. Rien n'a été modifié.", true);
+        });
+    }
+
+    barre.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    barre.addEventListener("click", function (e) {
+      var action = e.target.getAttribute("data-mise-en-forme");
+      if (action) {
+        document.execCommand(action, false, null);
+        el.focus();
+        return;
+      }
+      if (e.target.getAttribute("data-edito-champ") === "enregistrer") enregistrer();
+      if (e.target.getAttribute("data-edito-champ") === "annuler") annuler();
+    });
+  }
+
+  /* Barre flottante ancrée au-dessus du champ en cours de saisie. */
+  function construireBarre(el, riche) {
+    var barre = document.createElement("div");
+    barre.className = "edito-barre";
+    var outils = "";
+    if (riche) {
+      outils =
+        '<button type="button" class="edito-barre__outil" data-mise-en-forme="bold" title="Gras"><strong>G</strong></button>' +
+        '<button type="button" class="edito-barre__outil" data-mise-en-forme="italic" title="Italique"><em>I</em></button>' +
+        '<button type="button" class="edito-barre__outil" data-mise-en-forme="insertUnorderedList" title="Liste à puces">Liste</button>' +
+        '<span class="edito-barre__separateur"></span>';
+    }
+    barre.innerHTML =
+      outils +
+      '<button type="button" class="edito-barre__valider" data-edito-champ="enregistrer">Enregistrer</button>' +
+      '<button type="button" class="edito-barre__annuler" data-edito-champ="annuler">Annuler</button>' +
+      '<span class="edito-barre__aide">Échap pour annuler</span>';
+
+    document.body.appendChild(barre);
+    placerLaBarre(barre, el);
+
+    // La page bouge : au défilement comme au redimensionnement, la barre
+    // doit suivre son champ, sinon elle finit par le désigner de loin.
+    var suivre = function () { placerLaBarre(barre, el); };
+    window.addEventListener("scroll", suivre, { passive: true });
+    window.addEventListener("resize", suivre);
+    barre.addEventListener("remove", function () {
+      window.removeEventListener("scroll", suivre);
+      window.removeEventListener("resize", suivre);
+    });
+    var retirer = barre.remove.bind(barre);
+    barre.remove = function () {
+      window.removeEventListener("scroll", suivre);
+      window.removeEventListener("resize", suivre);
+      retirer();
+    };
+    return barre;
+  }
+
+  function placerLaBarre(barre, el) {
+    var cadre = el.getBoundingClientRect();
+    var hauteur = barre.offsetHeight || 40;
+    // Au-dessus du champ, sauf s'il n'y a pas la place : on bascule alors
+    // en dessous plutôt que de sortir de l'écran.
+    var haut = cadre.top - hauteur - 10;
+    if (haut < 62) haut = cadre.bottom + 10;
+    barre.style.top = Math.round(haut) + "px";
+    barre.style.left = Math.round(Math.max(12, Math.min(
+      cadre.left, window.innerWidth - barre.offsetWidth - 12))) + "px";
   }
 
   /* --------------------------------------------------------------------- */

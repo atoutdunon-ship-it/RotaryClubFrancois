@@ -303,3 +303,140 @@ body:not(.edito-actif) .edito-zone {
 
   .edito-zone { outline: none !important; background: none !important; }
 }
+
+/* ==========================================================================
+   Cadre rouge périmétrique — signal du mode édition
+   --------------------------------------------------------------------------
+   Le mode édition écrit dans la base que voient les visiteurs : chaque
+   enregistrement est immédiatement public. Un bandeau en haut de page se
+   perd dès qu'on descend ; le cadre reste dans le champ de vision, quelle
+   que soit la position dans la page.
+
+   Deux précautions.
+   * `pointer-events: none` — le cadre informe, il n'intercepte rien. Sans
+     cela, tout clic près d'un bord serait avalé par lui.
+   * `position: fixed` — il ceint la fenêtre, pas le document : il ne
+     défile pas et ne s'allonge pas avec le contenu.
+
+   Rouge #C62828 : blanc dessus à 5,9:1, au-dessus du seuil de 4,5.
+   ========================================================================== */
+
+.edito-cadre {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  border: 4px solid #C62828;
+  box-shadow: inset 0 0 0 1px rgba(198, 40, 40, 0.35);
+}
+
+.edito-cadre__etiquette {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  background: #C62828;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 18px;
+  border-radius: 6px 6px 0 0;
+  white-space: nowrap;
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 620px) {
+  .edito-cadre { border-width: 3px; }
+  .edito-cadre__etiquette { font-size: 0.62rem; padding: 4px 10px; }
+}
+
+/* Le cadre ne s'imprime pas : il appartient à l'outil, pas au document. */
+@media print { .edito-cadre { display: none; } }
+
+
+/* ==========================================================================
+   Édition à la volée — on écrit là où le texte s'affiche
+   ========================================================================== */
+
+.edito-zone--saisie {
+  outline: 2px solid #C62828;
+  outline-offset: 3px;
+  background: #FFF8F7;
+  border-radius: 3px;
+  /* Le champ garde la typographie de la page : c'est tout l'intérêt de
+     l'édition en place — voir le rendu réel avant d'enregistrer. */
+  min-height: 1.2em;
+  cursor: text;
+}
+
+.edito-zone--saisie:focus { outline-color: #A31A1A; }
+
+.edito-barre {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #14162B;
+  border-radius: 8px;
+  padding: 6px 8px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+}
+
+.edito-barre__outil,
+.edito-barre__valider,
+.edito-barre__annuler {
+  font-family: inherit;
+  font-size: 0.76rem;
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-height: 32px;
+}
+
+.edito-barre__outil {
+  background: #2A2D48;
+  color: #ffffff;              /* 12,1:1 */
+  min-width: 34px;
+}
+
+.edito-barre__outil:hover { background: #3A3E60; }
+
+.edito-barre__valider {
+  background: #15803D;         /* blanc dessus : 5,02:1 */
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.edito-barre__valider:hover { background: #106430; }
+
+.edito-barre__annuler {
+  background: transparent;
+  color: #ffffff;              /* sur #14162B : 15,6:1 */
+  border-color: #4A4E6C;
+}
+
+.edito-barre__annuler:hover { background: #2A2D48; }
+
+.edito-barre__separateur {
+  width: 1px;
+  height: 20px;
+  background: #3A3E60;
+  margin: 0 2px;
+}
+
+.edito-barre__aide {
+  font-size: 0.68rem;
+  color: #C9CCE0;              /* sur #14162B : 10,4:1 */
+  padding-left: 4px;
+}
+
+@media (max-width: 620px) {
+  .edito-barre__aide { display: none; }
+  .edito-barre { padding: 5px 6px; }
+}

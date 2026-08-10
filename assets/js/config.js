@@ -50,7 +50,10 @@
     // Laissez vide : l'adresse de connexion est déduite du serveur ci-dessus.
     // À renseigner seulement si votre espace membre est sur un chemin
     // inhabituel.
-    urlEspaceMembre: ""
+    urlEspaceMembre: "",
+
+    // Idem pour le panneau d'administration : déduit du serveur ci-dessus.
+    urlAdministration: ""
   };
 
   /* ---------------------------------------------------------------------- */
@@ -93,10 +96,25 @@
     return base + "/espace-membre";
   }
 
+  /* Adresse du panneau d'administration, ou null.
+
+     Le panneau vit dans la même application que l'espace membre : c'est
+     donc la même base, avec un autre chemin. Flask exige la connexion et
+     renvoie vers la page d'identification si l'on n'est pas administrateur —
+     le bouton n'ouvre aucune porte, il évite seulement d'avoir à taper
+     l'adresse de mémoire. */
+  function urlAdministration() {
+    if (CONFIGURATION.urlAdministration) return CONFIGURATION.urlAdministration;
+    var base = baseApi();
+    if (base === null) return null;
+    return base + "/administration/";
+  }
+
   window.RC = {
     baseApi: baseApi,
     apiDisponible: apiDisponible,
     urlEspaceMembre: urlEspaceMembre,
+    urlAdministration: urlAdministration,
 
     /* Enveloppe de fetch qui n'échoue jamais bruyamment.
        Renvoie une promesse résolue avec :
@@ -142,6 +160,21 @@
      naturelle de la visite, pas une annexe. `rel="noopener"` protège malgré
      tout la page d'origine si le club opte un jour pour un nouvel onglet. */
   function brancherPasserelle() {
+    /* Panneau d'administration. Même principe que l'espace membre : le lien
+       pointe dans le HTML vers la page d'explication, et n'est réécrit vers
+       le panneau que si un serveur est configuré. Un bouton qui ne mène
+       nulle part vaut moins qu'un bouton qui explique pourquoi. */
+    var administration = urlAdministration();
+    document.querySelectorAll("[data-administration]").forEach(function (lien) {
+      if (!administration) return;
+      lien.href = administration;
+      lien.rel = "noopener";
+      lien.removeAttribute("target");
+      if (administration.indexOf("http") === 0) {
+        lien.title = "Ouvre le panneau d'administration du site";
+      }
+    });
+
     var cible = urlEspaceMembre();
     if (!cible) return;
 
