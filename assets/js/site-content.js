@@ -372,10 +372,66 @@
   // est injoignable, ou bouton « soutenir le club » hors action précise).
   brancherBoutonsDon();
 
+  /* Aperçu du catalogue sur l'accueil.
+
+     La boutique du club existait, alimentée depuis l'espace membre, mais
+     n'apparaissait nulle part avant que le visiteur ne clique sur « Boutique ».
+     Trois articles en page d'accueil suffisent à montrer que le club vend
+     quelque chose — et à quoi sert cet argent.
+
+     La section entière disparaît si le catalogue est vide : une rubrique
+     « Boutique » sans article donne une plus mauvaise impression qu'une
+     absence de rubrique. */
+  function renderApercuBoutique(donnees) {
+    const socle = document.querySelector("[data-dynamic='boutique-apercu']");
+    if (!socle) return;
+    const section = socle.closest("section");
+
+    const articles = [];
+    (donnees && donnees.familles ? donnees.familles : []).forEach((f) => {
+      f.produits.forEach((p) => articles.push(p));
+    });
+    if (!articles.length) {
+      if (section) section.style.display = "none";
+      return;
+    }
+
+    socle.innerHTML = articles.slice(0, 3).map((p) => `
+      <a class="card card--lien" href="boutique.html">
+        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="" class="card__photo">` : ""}
+        <div class="card__meta">${escapeHtml(p.type_label || "")}</div>
+        <h3>${escapeHtml(p.nom)}</h3>
+        <p class="card__prix">${escapeHtml(formatPrix(p.prix))}</p>
+      </a>`).join("");
+  }
+
+  function formatPrix(valeur) {
+    const nombre = Number(valeur || 0);
+    return nombre.toFixed(2).replace(".", ",") + " €";
+  }
+
+  /* Même règle pour les actualités et l'agenda de l'accueil : une section
+     vide se retire plutôt que de s'afficher creuse. */
+  function masquerSiVide(selecteur) {
+    const socle = document.querySelector(selecteur);
+    if (!socle) return;
+    const section = socle.closest("section");
+    if (section && !socle.querySelector(".card, .cal-grille, .cal-semaine, .cal-annee")) {
+      section.style.display = "none";
+    }
+  }
+
   const page = document.body.getAttribute("data-page");
   if (page) {
     RC.api("/api/public/contenu?page=" + encodeURIComponent(page)).then((d) => {
       if (d) applyBlocks(d);
     });
+  }
+
+  if (page === "accueil") {
+    RC.api("/api/public/boutique").then(renderApercuBoutique);
+    // Les actualités de l'accueil arrivent par le même chemin que celles de
+    // la page Actualités ; on retire simplement la section si rien ne vient.
+    setTimeout(() => masquerSiVide("[data-dynamic='actualites']"), 2500);
   }
 })();

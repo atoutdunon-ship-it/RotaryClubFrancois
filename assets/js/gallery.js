@@ -279,7 +279,11 @@
         if (photos === null) {
           showMessage(
             (window.rcLangue && window.rcLangue.traduire("galerie.hors_ligne")) ||
-              "La galerie photo du club s'affiche depuis l'espace membre. Contactez le Secrétariat pour y accéder."
+              // Ce message disait que la galerie « s'affiche depuis l'espace
+              // membre » : c'était faux, et c'est ce qui donnait au visiteur
+              // l'impression que les photos du club lui étaient fermées. Elles
+              // sont publiques ; seul le serveur était injoignable.
+              "La galerie est momentanément indisponible. Réessayez dans un instant."
           );
           return;
         }

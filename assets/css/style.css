@@ -2902,3 +2902,23 @@ img, video, iframe { max-width: 100%; }
   .evenement__carte form textarea,
   .evenement__partage input { font-size: 16px; }
 }
+
+/* État d'attente ou d'absence de contenu.
+   Remplace les contenus de démonstration qui figuraient en dur dans les
+   pages : un faux projet ou une fausse date, affichés le temps que le
+   serveur réponde, se lisent comme du vrai et trompent le visiteur. */
+.etat-vide {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 44px 20px;
+  color: var(--grey);
+  background: var(--off-white);
+  border: 1px dashed var(--grey-light);
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+/* Carte cliquable de l'aperçu boutique en page d'accueil. */
+.card--lien { display: block; transition: transform .18s ease, box-shadow .18s ease; }
+.card--lien:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(12,60,124,.12); }
+.card__prix { font-weight: 700; color: var(--navy); margin-top: 8px; }

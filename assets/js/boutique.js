@@ -471,9 +471,12 @@
       if (donnees === null) {
         contenu.innerHTML =
           '<p class="boutique-attente">' +
+          // Idem : « pas encore ouverte » laissait croire que la boutique
+          // n'existait pas, alors que le catalogue est public et alimenté
+          // depuis l'espace membre.
           t("boutique.hors_ligne",
-            "La boutique en ligne n'est pas encore ouverte à cette adresse. " +
-            "Pour commander, contactez le Trésorier du club à rotaryclubdufrancois@gmail.com.") +
+            "La boutique est momentanément indisponible. Réessayez dans un " +
+            "instant, ou écrivez-nous à rotaryclubdufrancois@gmail.com.") +
           "</p>";
         var panneau = document.getElementById("panier");
         if (panneau) panneau.hidden = true;
