@@ -84,7 +84,16 @@ a { color: inherit; text-decoration: none; }
 
 .site-header__nav {
   background: var(--navy);
-  overflow-x: auto;
+
+  /* PAS d'overflow ici. La règle portait « overflow-x: auto », hérité du
+     temps où douze entrées à plat débordaient et défilaient. Elle rendait
+     les menus déroulants inutilisables : dès qu'un axe cesse d'être
+     « visible », l'autre passe à « auto », et le tiroir en position
+     absolue — qui sort par le bas — était découpé net par ce conteneur.
+
+     Le bandeau tient désormais en 703 px sur 1 180 : rien ne déborde plus,
+     et rien ne doit être découpé. */
+  overflow: visible;
 }
 
 .nav {
@@ -1509,7 +1518,13 @@ body.visionneuse-ouverte { overflow: hidden; }
 
 /* Filet de sécurité : aucun média ne peut provoquer de défilement
    horizontal, quelle que soit la largeur de l'appareil. */
+/* « hidden » ferait de body un conteneur de défilement, ce qui casse le
+   « position: sticky » du bandeau sur Chrome et Safari. « clip » coupe le
+   débordement sans créer ce conteneur. La ligne « hidden » reste en repli
+   pour les navigateurs qui ignorent « clip » ; la suivante l'écrase
+   partout ailleurs. */
 html, body { max-width: 100%; overflow-x: hidden; }
+html, body { overflow-x: clip; }
 img, video, iframe { max-width: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
