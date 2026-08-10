@@ -3068,3 +3068,108 @@ img, video, iframe { max-width: 100%; }
   text-underline-offset: 2px;
 }
 .bottom__contact:hover { color: #ffffff; }
+
+
+/* ==========================================================================
+   GALERIE DU CLUB INTERACT — page interact.html
+   --------------------------------------------------------------------------
+   Grille simple et agrandissement au clic. La page Galerie du Rotary a sa
+   propre visionneuse, plus riche ; la charger ici imposerait sa feuille et
+   ses réglages à une page qui n'en a pas l'usage.
+   ========================================================================== */
+.gi-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.gi-vignette {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 1px solid #c8d0de;
+  background: var(--white);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  /* Bien au-delà des 44 px de cible tactile : une vignette se vise sans
+     effort, même en marchant. */
+  min-height: 160px;
+}
+
+.gi-vignette:hover { border-color: var(--navy); }
+.gi-vignette:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+.gi-vignette img {
+  display: block;
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+/* Légende sur bandeau navy plein, jamais sur la photo en transparence : le
+   contraste d'un texte posé sur une image dépend de l'image, donc de rien
+   de contrôlable. Blanc sur navy, 10,75:1, quelle que soit la photo. */
+.gi-legende {
+  display: block;
+  padding: 9px 12px;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+/* ---------- Agrandissement ---------------------------------------------- */
+.gi-voile {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 42, 88, 0.94);
+}
+
+.gi-cadre { max-width: 1100px; max-height: 100%; margin: 0; }
+
+.gi-cadre img {
+  display: block;
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.gi-cadre figcaption {
+  margin-top: 14px;
+  color: var(--white);          /* 14,17:1 sur le voile navy profond */
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.gi-fermer {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  min-width: 88px;
+  min-height: 44px;
+  padding: 11px 18px;
+  border: 1px solid var(--white);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--white);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gi-fermer:hover { background: var(--white); color: var(--navy-deep); }
+
+@media (max-width: 600px) {
+  .gi-grille { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .gi-vignette img { height: 130px; }
+  .gi-voile { padding: 12px; }
+  .gi-fermer { top: 10px; right: 10px; }
+}
