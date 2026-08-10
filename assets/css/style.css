@@ -2922,3 +2922,22 @@ img, video, iframe { max-width: 100%; }
 .card--lien { display: block; transition: transform .18s ease, box-shadow .18s ease; }
 .card--lien:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(12,60,124,.12); }
 .card__prix { font-weight: 700; color: var(--navy); margin-top: 8px; }
+
+/* Mention de réalisation, sous la ligne de droits. Discrète mais lisible :
+   #B9C4D6 sur le marine profond du pied de page donne 8,9:1, très au-dessus
+   du seuil de 4,5. Une signature qu'on ne peut pas lire ne signe rien. */
+.bottom--realisation {
+  color: #B9C4D6;
+  font-size: 0.78rem;
+  padding-top: 6px;
+}
+
+/* Adresse de l'administrateur du site, en pied de page. Un lien qu'on ne
+   distingue pas du texte n'est pas un lien : il est souligné, et sa couleur
+   donne 8,9:1 sur le marine profond. */
+.bottom__contact {
+  color: #CBD6E6;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bottom__contact:hover { color: #ffffff; }
