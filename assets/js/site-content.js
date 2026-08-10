@@ -60,7 +60,7 @@
       .map(
         (a) => `
         <div class="card">
-          ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="" class="card__photo" loading="lazy" decoding="async">` : ""}
+          ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="" class="card__photo">` : ""}
           <div class="card__meta">${escapeHtml(formatDate(a.date_publication))}</div>
           <h3>${escapeHtml(a.titre)}</h3>
           <div class="texte-riche">${a.chapo || ""}</div>
@@ -385,24 +385,35 @@
   function renderApercuBoutique(donnees) {
     const socle = document.querySelector("[data-dynamic='boutique-apercu']");
     if (!socle) return;
+    const section = socle.closest("section");
 
     const articles = [];
     (donnees && donnees.familles ? donnees.familles : []).forEach((f) => {
       f.produits.forEach((p) => articles.push(p));
     });
-
-    // Rien à montrer : on laisse en place le texte déjà écrit dans la page.
-    // La section se masquait auparavant, ce qui creusait le bas de
-    // l'accueil dès que le serveur ne répondait pas — le club l'a signalé.
-    if (!articles.length) return;
+    if (!articles.length) {
+      if (section) section.style.display = "none";
+      return;
+    }
 
     socle.innerHTML = articles.slice(0, 3).map((p) => `
       <a class="card card--lien" href="boutique.html">
-        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="" class="card__photo" loading="lazy" decoding="async">` : ""}
+        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="" class="card__photo">` : ""}
         <div class="card__meta">${escapeHtml(p.type_label || "")}</div>
         <h3>${escapeHtml(p.nom)}</h3>
         <p class="card__prix">${escapeHtml(formatPrix(p.prix))}</p>
       </a>`).join("");
+  }
+
+  /* Même règle pour les actualités et l'agenda de l'accueil : une section
+     vide se retire plutôt que de s'afficher creuse. */
+  function masquerSiVide(selecteur) {
+    const socle = document.querySelector(selecteur);
+    if (!socle) return;
+    const section = socle.closest("section");
+    if (section && !socle.querySelector(".card, .cal-grille, .cal-semaine, .cal-annee")) {
+      section.style.display = "none";
+    }
   }
 
   function formatPrix(valeur) {
@@ -419,8 +430,8 @@
 
   if (page === "accueil") {
     RC.api("/api/public/boutique").then(renderApercuBoutique);
-    // Plus de masquage à retardement : chaque section garde son texte
-    // d'attente si le club n'a rien publié. Une section qui disparaît
-    // laisse un trou que le visiteur remarque ; un texte sobre, non.
+    // Les actualités de l'accueil arrivent par le même chemin que celles de
+    // la page Actualités ; on retire simplement la section si rien ne vient.
+    setTimeout(() => masquerSiVide("[data-dynamic='actualites']"), 2500);
   }
 })();

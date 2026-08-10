@@ -1518,13 +1518,7 @@ body.visionneuse-ouverte { overflow: hidden; }
 
 /* Filet de sécurité : aucun média ne peut provoquer de défilement
    horizontal, quelle que soit la largeur de l'appareil. */
-/* « hidden » ferait de body un conteneur de défilement, ce qui casse le
-   « position: sticky » du bandeau sur Chrome et Safari. « clip » coupe le
-   débordement sans créer ce conteneur. La ligne « hidden » reste en repli
-   pour les navigateurs qui ignorent « clip » ; la suivante l'écrase
-   partout ailleurs. */
 html, body { max-width: 100%; overflow-x: hidden; }
-html, body { overflow-x: clip; }
 img, video, iframe { max-width: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3074,25 +3068,3 @@ img, video, iframe { max-width: 100%; }
   text-underline-offset: 2px;
 }
 .bottom__contact:hover { color: #ffffff; }
-
-/* ==========================================================================
-   Anti-zoom iOS — règle transversale
-   --------------------------------------------------------------------------
-   Safari sur iPhone agrandit la page dès qu'un champ de saisie descend
-   sous 16 px : on tape la première lettre et l'on se retrouve décadré,
-   sans moyen simple de revenir. Les tailles réduites conviennent au
-   bureau, où le curseur ne déclenche rien ; elles sont donc remontées ici,
-   et ici seulement.
-
-   Écrite en fin de feuille pour l'emporter sur les règles particulières
-   sans avoir à les retoucher une à une — il y en a une dizaine.
-   ========================================================================== */
-@media (max-width: 860px) {
-  input,
-  select,
-  textarea {
-    font-size: 16px;
-  }
-}
-
-}
