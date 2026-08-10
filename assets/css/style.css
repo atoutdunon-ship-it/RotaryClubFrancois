@@ -3094,3 +3094,100 @@ img, video, iframe { max-width: 100%; }
     font-size: 16px;
   }
 }
+
+
+/* ==========================================================================
+   LA VIE DU CLUB — bande unique de la page d'accueil
+   --------------------------------------------------------------------------
+   Trois colonnes de même hauteur, le lien toujours en bas quelle que soit la
+   longueur du contenu : c'est ce qui distingue une page tenue d'une page
+   assemblée. La grille se replie à une colonne sous 860 px.
+   ========================================================================== */
+.vie-club { background: var(--white); }
+
+.vie-club__grille {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.vie-club__colonne {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 26px;
+  background: var(--white);
+  border: 1px solid #d5dae3;
+  border-top: 3px solid var(--navy);
+}
+
+.vie-club__titre {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--navy-deep);
+  margin-bottom: 16px;
+}
+
+/* `flex: 1` colle le lien en bas : sans lui, trois colonnes de longueurs
+   différentes alignent leurs liens n'importe où. */
+.vie-club__flux { flex: 1; }
+
+.vie-club__repli {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #3d4756;          /* 9,4 : 1 sur blanc */
+}
+
+.vie-club__lien {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 0;
+  min-height: 44px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--navy);      /* 8,1 : 1 sur blanc */
+  border-bottom: 2px solid var(--navy);
+  align-self: flex-start;
+}
+
+.vie-club__lien:hover { color: var(--navy-deep); border-bottom-color: var(--navy-deep); }
+
+/* -- Entrées remplies depuis le serveur ---------------------------------- */
+.vie-club__entree {
+  display: block;
+  padding: 14px 0;
+  border-bottom: 1px solid #e6e9ef;
+  color: var(--navy-deep);
+}
+
+.vie-club__entree:last-child { border-bottom: 0; }
+.vie-club__entree:hover .vie-club__entree-titre { text-decoration: underline; }
+
+.vie-club__entree-date {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a5566;          /* 7,6 : 1 sur blanc */
+  margin-bottom: 5px;
+}
+
+.vie-club__entree-titre {
+  display: block;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.vie-club__entree-detail {
+  display: block;
+  font-size: 0.82rem;
+  color: #4a5566;
+  margin-top: 4px;
+}
+
+@media (max-width: 860px) {
+  .vie-club__grille { grid-template-columns: 1fr; gap: 20px; }
+}
