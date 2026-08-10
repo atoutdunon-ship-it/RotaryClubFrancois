@@ -33,7 +33,9 @@
       "boutique.cgv_acceptation": "By confirming, you accept the terms of sale. You have fourteen days to withdraw, except for dated event tickets and personalised items.",
       /* Navigation et en-tête */
       "nav.accueil": "Home",
-      "nav.club": "The Club",
+      "nav.rubrique_club": "The Club",
+      "nav.rubrique_vie": "Club life",
+      "nav.club": "About the club",
       "nav.district": "District 7030",
       "nav.actions": "Our Projects",
       "nav.agenda": "Calendar",
@@ -248,7 +250,9 @@
       "boutique.cgv_acceptation": "Al confirmar, acepta las condiciones generales de venta. Dispone de catorce días para desistir, salvo para las entradas con fecha determinada y los artículos personalizados.",
       /* Navegación y encabezado */
       "nav.accueil": "Inicio",
-      "nav.club": "El Club",
+      "nav.rubrique_club": "El Club",
+      "nav.rubrique_vie": "Vida del club",
+      "nav.club": "Presentación del club",
       "nav.district": "Distrito 7030",
       "nav.actions": "Nuestras acciones",
       "nav.agenda": "Agenda",

@@ -23,16 +23,26 @@
   <div class="site-header__nav">
     <nav class="nav" id="site-nav">
       <a href="index.html" data-i18n="nav.accueil">Accueil</a>
-      <a href="club.html" class="active" data-i18n="nav.club">Le Club</a>
-      <a href="le-rotary.html" data-i18n="nav.le_rotary">Le Rotary</a>
-      <a href="interact.html" data-i18n="nav.interact">Interact La Yole</a>
-      <a href="membres.html" data-i18n="nav.membres">Nos Membres</a>
-      <a href="district.html" data-i18n="nav.district">District 7030</a>
+      <div class="nav__rubrique">
+        <button type="button" class="nav__declencheur active" aria-expanded="false" aria-controls="nav-rubrique_club" data-i18n="nav.rubrique_club">Le Club</button>
+        <div class="nav__tiroir" id="nav-rubrique_club">
+          <a href="club.html" class="active" data-i18n="nav.club">Présentation du club</a>
+          <a href="membres.html" data-i18n="nav.membres">Nos Membres</a>
+          <a href="le-rotary.html" data-i18n="nav.le_rotary">Le Rotary</a>
+          <a href="district.html" data-i18n="nav.district">District 7030</a>
+          <a href="interact.html" data-i18n="nav.interact">Interact La Yole</a>
+        </div>
+      </div>
       <a href="actions.html" data-i18n="nav.actions">Nos Actions</a>
+      <div class="nav__rubrique">
+        <button type="button" class="nav__declencheur" aria-expanded="false" aria-controls="nav-rubrique_vie" data-i18n="nav.rubrique_vie">Vie du club</button>
+        <div class="nav__tiroir" id="nav-rubrique_vie">
+          <a href="agenda.html" data-i18n="nav.agenda">Agenda</a>
+          <a href="actualites.html" data-i18n="nav.actualites">Actualités</a>
+          <a href="galerie.html" data-i18n="nav.galerie">Galerie</a>
+        </div>
+      </div>
       <a href="boutique.html" data-i18n="nav.boutique">Boutique</a>
-      <a href="agenda.html" data-i18n="nav.agenda">Agenda</a>
-      <a href="actualites.html" data-i18n="nav.actualites">Actualités</a>
-      <a href="galerie.html" data-i18n="nav.galerie">Galerie</a>
       <a href="contact.html" data-i18n="nav.contact">Contact</a>
     </nav>
   </div>

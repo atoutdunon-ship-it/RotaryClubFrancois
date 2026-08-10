@@ -96,7 +96,8 @@ a { color: inherit; text-decoration: none; }
   padding: 0 20px;
 }
 
-.nav a {
+.nav a,
+.nav__declencheur {
   display: block;
   font-size: 0.95rem;
   color: var(--white);
@@ -105,12 +106,93 @@ a { color: inherit; text-decoration: none; }
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.nav a:hover { background: rgba(255,255,255,0.08); }
+/* ---------- Rubriques à sous-menu ----------------------------------------
+   Douze entrées à plat demandaient 1 357 px pour un bandeau qui en offre
+   1 180 : le menu passait sur deux lignes à toutes les largeurs de bureau.
+   Six rubriques ramènent l'occupation à environ 620 px.
 
-.nav a.active {
+   Le déclencheur est un bouton, non un lien : il n'ouvre aucune page. Un
+   lien qui ne mène nulle part égare autant la souris que le lecteur
+   d'écran. Le bouton porte aria-expanded, que la technologie d'assistance
+   sait annoncer.
+   ---------------------------------------------------------------------- */
+.nav__rubrique { position: relative; }
+
+.nav__declencheur {
+  font: inherit;
+  font-size: 0.95rem;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Le chevron est dessiné en CSS plutôt qu'importé : le club ne veut pas
+   d'icônes dans ses pages, et une bordure pliée n'en est pas une. */
+.nav__declencheur::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 8px;
+  vertical-align: 2px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.nav__declencheur[aria-expanded="true"]::after {
+  transform: rotate(-135deg);
+  vertical-align: -1px;
+}
+
+.nav__tiroir {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  background: var(--navy-deep);
+  border-top: 3px solid var(--white);
+  box-shadow: 0 12px 28px rgba(8, 42, 88, 0.28);
+  z-index: 120;
+}
+
+.nav__rubrique:hover .nav__tiroir,
+.nav__rubrique:focus-within .nav__tiroir,
+.nav__tiroir.is-open { display: block; }
+
+.nav__tiroir a {
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.nav__tiroir a:last-child { border-bottom: 0; }
+.nav__tiroir a:hover { background: rgba(255, 255, 255, 0.12); }
+
+.nav__tiroir a.active {
+  border-left-color: var(--white);
+  background: rgba(255, 255, 255, 0.10);
+  font-weight: 600;
+}
+
+.nav a:hover,
+.nav__declencheur:hover { background: rgba(255,255,255,0.08); }
+
+.nav > a.active,
+.nav__declencheur.active {
   background: var(--pale-blue);
   color: var(--navy-deep);
 }
+
+/* Le tiroir hérite du navy, pas du bleu pâle du déclencheur actif : sans
+   cette remise à zéro, un déclencheur actif teindrait ses enfants en bleu
+   pâle sur bleu pâle. */
+.nav__declencheur.active + .nav__tiroir a { color: var(--white); }
 
 /* ---------- Sélecteur de langue ---------- */
 .selecteur-langue {
@@ -784,15 +866,50 @@ form input:focus, form select:focus, form textarea:focus {
 
   .nav.is-open { display: flex; }
 
-  .nav a {
+  .nav a,
+  .nav__declencheur {
     padding: 15px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     border-left: 3px solid transparent;
+    /* 48 px de haut au doigt : au-dessus du minimum de 44 px, parce qu'une
+       entrée de menu se touche en marchant. */
+    min-height: 48px;
   }
 
-  .nav a.active {
+  .nav > a.active,
+  .nav__declencheur.active {
     border-left-color: var(--gold);
+    background: transparent;
+    color: var(--white);
   }
+
+  /* Sur mobile, le tiroir n'est plus une couche flottante : il s'insère
+     dans la colonne et pousse la suite. Une couche flottante dans un menu
+     déjà déplié se superposerait aux entrées suivantes. */
+  .nav__rubrique { width: 100%; }
+
+  .nav__declencheur {
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav__tiroir {
+    position: static;
+    min-width: 0;
+    border-top: 0;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.18);
+  }
+
+  /* Le survol n'ouvre plus rien : au doigt, il n'existe pas, et le laisser
+     agir ouvrirait un tiroir au simple passage du défilement. Seule la
+     classe posée par le clic ouvre. */
+  .nav__rubrique:hover .nav__tiroir,
+  .nav__rubrique:focus-within .nav__tiroir { display: none; }
+  .nav__tiroir.is-open { display: block; }
+
+  .nav__tiroir a { padding-left: 36px; }
+  .nav__tiroir a.active { border-left-color: var(--gold); }
 
   .hero { padding: 110px 0 80px; }
   .hero--text { margin-top: -36px; border-radius: 20px 20px 0 0; padding: 56px 0 56px; }
@@ -808,7 +925,8 @@ form input:focus, form select:focus, form textarea:focus {
   .container { padding: 0 20px; }
   .site-header__top { padding: 12px 20px; }
   .brand img { height: 40px; }
-  .nav a { padding: 14px 20px; font-size: 0.92rem; }
+  .nav a,
+  .nav__declencheur { padding: 14px 20px; font-size: 0.92rem; }
   .hero { padding: 90px 0 60px; }
   .hero--text { margin-top: -24px; border-radius: 14px 14px 0 0; padding: 44px 0 48px; }
   .hero h1 { font-size: 1.6rem; }
@@ -2941,3 +3059,23 @@ img, video, iframe { max-width: 100%; }
   text-underline-offset: 2px;
 }
 .bottom__contact:hover { color: #ffffff; }
+
+/* ==========================================================================
+   Anti-zoom iOS — règle transversale
+   --------------------------------------------------------------------------
+   Safari sur iPhone agrandit la page dès qu'un champ de saisie descend
+   sous 16 px : on tape la première lettre et l'on se retrouve décadré,
+   sans moyen simple de revenir. Les tailles réduites conviennent au
+   bureau, où le curseur ne déclenche rien ; elles sont donc remontées ici,
+   et ici seulement.
+
+   Écrite en fin de feuille pour l'emporter sur les règles particulières
+   sans avoir à les retoucher une à une — il y en a une dizaine.
+   ========================================================================== */
+@media (max-width: 860px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
