@@ -56,25 +56,17 @@
   function renderActualites(articles) {
     const container = document.querySelector("[data-dynamic='actualites']");
     if (!container || !articles.length) return;
-
-    // Sur l'accueil, la colonne est étroite : trois titres datés valent
-    // mieux que trois cartes à photo qui la feraient déborder. Ailleurs,
-    // la mise en cartes reste celle de la page Actualités.
-    const compact = container.classList.contains("vie-club__flux");
-
-    container.innerHTML = compact
-      ? articles.slice(0, 3).map((a) => `
-        <a class="vie-club__entree" href="actualites.html">
-          <span class="vie-club__entree-date">${escapeHtml(formatDate(a.date_publication))}</span>
-          <span class="vie-club__entree-titre">${escapeHtml(a.titre)}</span>
-        </a>`).join("")
-      : articles.map((a) => `
+    container.innerHTML = articles
+      .map(
+        (a) => `
         <div class="card">
           ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="" class="card__photo" loading="lazy" decoding="async">` : ""}
           <div class="card__meta">${escapeHtml(formatDate(a.date_publication))}</div>
           <h3>${escapeHtml(a.titre)}</h3>
           <div class="texte-riche">${a.chapo || ""}</div>
-        </div>`).join("");
+        </div>`
+      )
+      .join("");
   }
 
   function renderActions(actions) {
@@ -398,73 +390,24 @@
     (donnees && donnees.familles ? donnees.familles : []).forEach((f) => {
       f.produits.forEach((p) => articles.push(p));
     });
-    // Rien à montrer : on laisse le texte de repli déjà écrit dans la page.
-    // Masquer la section creusait le bas de l'accueil, ce que le club a
-    // signalé ; le repli, lui, dit la vérité et mène à la bonne page.
+
+    // Rien à montrer : on laisse en place le texte déjà écrit dans la page.
+    // La section se masquait auparavant, ce qui creusait le bas de
+    // l'accueil dès que le serveur ne répondait pas — le club l'a signalé.
     if (!articles.length) return;
 
     socle.innerHTML = articles.slice(0, 3).map((p) => `
-      <a class="vie-club__entree" href="boutique.html">
-        <span class="vie-club__entree-date">${escapeHtml(p.type_label || "Boutique")}</span>
-        <span class="vie-club__entree-titre">${escapeHtml(p.nom)}</span>
-        <span class="vie-club__entree-detail">${escapeHtml(formatPrix(p.prix))}</span>
+      <a class="card card--lien" href="boutique.html">
+        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="" class="card__photo" loading="lazy" decoding="async">` : ""}
+        <div class="card__meta">${escapeHtml(p.type_label || "")}</div>
+        <h3>${escapeHtml(p.nom)}</h3>
+        <p class="card__prix">${escapeHtml(formatPrix(p.prix))}</p>
       </a>`).join("");
   }
 
   function formatPrix(valeur) {
     const nombre = Number(valeur || 0);
     return nombre.toFixed(2).replace(".", ",") + " €";
-  }
-
-  /* ---------- Prochains rendez-vous de l'accueil ----------------------
-     L'accueil affichait une grille de mois entière, empruntée à la page
-     Agenda. Lourde — elle imposait le chargement de calendrier.js et de sa
-     feuille —, souvent vide, et défilant à l'horizontale sur téléphone.
-     Trois lignes datées disent la même chose sans rien de tout cela ; qui
-     veut le mois entier suit le lien.
-     -------------------------------------------------------------------- */
-  function chargerProchainsRendezVous() {
-    const socle = document.querySelector("[data-prochains-rendezvous]");
-    if (!socle) return;
-
-    const aujourdhui = new Date();
-    const horizon = new Date(aujourdhui.getTime());
-    horizon.setMonth(horizon.getMonth() + 4);
-    const jour = (d) => d.toISOString().slice(0, 10);
-
-    RC.api("/api/public/agenda?debut=" + jour(aujourdhui) + "&fin=" + jour(horizon))
-      .then((evenements) => {
-        // Rien, ou serveur injoignable : le texte de repli reste en place.
-        if (!Array.isArray(evenements) || !evenements.length) return;
-
-        const prochains = evenements
-          .map((e) => Object.assign({}, e, { _debut: new Date(e.date_debut) }))
-          .filter((e) => !isNaN(e._debut))
-          .sort((a, b) => a._debut - b._debut)
-          .slice(0, 4);
-        if (!prochains.length) return;
-
-        socle.innerHTML = prochains.map((e) => {
-          const cible = e.id ? "evenement.html?id=" + encodeURIComponent(e.id)
-                             : "agenda.html";
-          const detail = [e.lieu, e.pour_qui].filter(Boolean).join(" — ");
-          return `
-        <a class="vie-club__entree" href="${escapeHtml(cible)}">
-          <span class="vie-club__entree-date">${escapeHtml(dateLongue(e._debut))}</span>
-          <span class="vie-club__entree-titre">${escapeHtml(e.titre || "Rendez-vous du club")}</span>
-          ${detail ? `<span class="vie-club__entree-detail">${escapeHtml(detail)}</span>` : ""}
-        </a>`;
-        }).join("");
-      });
-  }
-
-  function dateLongue(date) {
-    try {
-      return date.toLocaleDateString("fr-FR",
-        { weekday: "long", day: "numeric", month: "long" });
-    } catch (e) {
-      return date.toLocaleDateString();
-    }
   }
 
   const page = document.body.getAttribute("data-page");
@@ -476,8 +419,8 @@
 
   if (page === "accueil") {
     RC.api("/api/public/boutique").then(renderApercuBoutique);
-    chargerProchainsRendezVous();
-    // Plus de masquage à retardement : chaque colonne porte un texte de
-    // repli véridique, qui reste si le serveur n'a rien à dire.
+    // Plus de masquage à retardement : chaque section garde son texte
+    // d'attente si le club n'a rien publié. Une section qui disparaît
+    // laisse un trou que le visiteur remarque ; un texte sobre, non.
   }
 })();

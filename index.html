@@ -6,8 +6,9 @@
 <title>Rotary Club du François — District 7030</title>
 <meta name="description" content="Rotary Club du François, Martinique. District 7030, Zone 34. Servir d'abord, agir localement.">
 <link rel="preload" as="image" href="assets/img/hero-baignoire-josephine.webp" fetchpriority="high">
-<link rel="stylesheet" href="assets/css/polices.css?v=20260810-1323">
-<link rel="stylesheet" href="assets/css/style.css?v=20260810-1323">
+<link rel="stylesheet" href="assets/css/polices.css?v=20260810-1423">
+<link rel="stylesheet" href="assets/css/calendrier.css?v=20260810-1423">
+<link rel="stylesheet" href="assets/css/style.css?v=20260810-1423">
 </head>
 <body data-page="accueil">
 
@@ -137,66 +138,67 @@
 </section>
 
 <!-- ======================================================================
-     LA VIE DU CLUB — une seule bande, trois colonnes.
+     La vie du club, telle qu'elle est tenue dans l'espace membre.
 
-     Auparavant : trois sections empilées, chacune alimentée par le serveur,
-     chacune capable de se vider. Sur un hébergement statique dont le
-     serveur dort, le bas de la page devenait un désert, et la grille du
-     calendrier — un mois entier, souvent vide, défilant à l'horizontale sur
-     mobile — occupait l'espace sans rien dire.
+     L'accueil ne montrait rien de ce que le club fait réellement : ni
+     actualité, ni rendez-vous, ni article de la boutique. Tout cela existe
+     et se met à jour depuis l'espace membre — mais s'arrêtait à la porte du
+     site. Un visiteur pouvait croire le club inactif.
 
-     Désormais : une bande unique. Ce qui vient du serveur enrichit ; ce qui
-     est écrit ici tient debout tout seul. Aucune section ne disparaît, et
-     l'on ne prétend jamais avoir une actualité qu'on n'a pas — le repli dit
-     où aller, il n'invente pas de contenu.
+     Ces trois blocs se remplissent depuis les API publiques. Ils gardent
+     leur texte d'attente si le club n'a rien publié : une section vide se
+     remarque moins qu'une section disparue, et le club a demandé qu'aucune
+     ne s'efface d'elle-même.
      ====================================================================== -->
-<section class="vie-club">
+
+<section>
   <div class="container">
     <div class="section-head">
-      <div class="section-head__eyebrow" data-block="vie_club:eyebrow">La vie du club</div>
-      <h2 data-block="vie_club:title">Ce qui se passe en ce moment</h2>
-      <p data-block="vie_club:body">Nos publications, nos prochains rendez-vous et
-        la boutique dont chaque achat finance une action.</p>
+      <div class="section-head__eyebrow" data-block="accueil_actus:eyebrow">Actualités</div>
+      <h2 data-block="accueil_actus:title">Les dernières nouvelles du club</h2>
     </div>
+    <div class="grid grid--3" data-dynamic="actualites">
+      <p class="etat-vide">Les publications du club paraissent ici au fil de l'année.</p>
+    </div>
+    <div style="margin-top:22px;">
+      <a href="actualites.html" class="btn">Toutes les actualités</a>
+    </div>
+  </div>
+</section>
 
-    <div class="vie-club__grille">
+<section class="alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head__eyebrow" data-block="accueil_agenda:eyebrow">Agenda</div>
+      <h2 data-block="accueil_agenda:title">Nos prochains rendez-vous</h2>
+      <p data-block="accueil_agenda:body">Cliquez sur un rendez-vous pour en voir le détail,
+        l'ajouter à votre agenda ou annoncer votre venue.</p>
+    </div>
+    <div class="calendrier" data-calendrier
+         data-source="/api/public/agenda"
+         data-vue="mois"
+         data-fiche="evenement.html?id=">
+      <p class="etat-vide">Le calendrier du club s'affiche ici.</p>
+    </div>
+    <div style="margin-top:22px;">
+      <a href="agenda.html" class="btn">Voir l'agenda complet</a>
+    </div>
+  </div>
+</section>
 
-      <!-- Actualités ------------------------------------------------------ -->
-      <article class="vie-club__colonne">
-        <h3 class="vie-club__titre" data-block="accueil_actus:title">Actualités</h3>
-        <div data-dynamic="actualites" class="vie-club__flux">
-          <p class="vie-club__repli" data-block="accueil_actus:body">
-            Le club publie ses comptes rendus d'action, ses distinctions et ses
-            temps forts au fil de l'année. Retrouvez-les sur la page Actualités.
-          </p>
-        </div>
-        <a href="actualites.html" class="vie-club__lien">Toutes les actualités</a>
-      </article>
-
-      <!-- Prochains rendez-vous ------------------------------------------- -->
-      <article class="vie-club__colonne">
-        <h3 class="vie-club__titre" data-block="accueil_agenda:title">Prochains rendez-vous</h3>
-        <div data-prochains-rendezvous class="vie-club__flux">
-          <p class="vie-club__repli" data-block="accueil_agenda:body">
-            Réunions statutaires, actions sur le terrain, soirées de gala : le
-            calendrier complet du club est tenu à jour sur la page Agenda.
-          </p>
-        </div>
-        <a href="agenda.html" class="vie-club__lien">Voir l'agenda complet</a>
-      </article>
-
-      <!-- Boutique --------------------------------------------------------- -->
-      <article class="vie-club__colonne">
-        <h3 class="vie-club__titre" data-block="accueil_boutique:title">La boutique</h3>
-        <div data-dynamic="boutique-apercu" class="vie-club__flux">
-          <p class="vie-club__repli" data-block="accueil_boutique:body">
-            Billets pour nos événements, objets du club, carnets de tombola :
-            la recette va intégralement aux actions du Rotary Club du François.
-          </p>
-        </div>
-        <a href="boutique.html" class="vie-club__lien">Voir toute la boutique</a>
-      </article>
-
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head__eyebrow" data-block="accueil_boutique:eyebrow">Boutique du club</div>
+      <h2 data-block="accueil_boutique:title">Chaque achat finance un projet</h2>
+      <p data-block="accueil_boutique:body">Billets pour nos événements, objets du club,
+        carnets de tombola : la recette va aux actions du Rotary Club du François.</p>
+    </div>
+    <div class="grid grid--3" data-dynamic="boutique-apercu">
+      <p class="etat-vide">Les articles proposés par le club paraissent ici.</p>
+    </div>
+    <div style="margin-top:22px;">
+      <a href="boutique.html" class="btn btn--primary">Voir toute la boutique</a>
     </div>
   </div>
 </section>
@@ -304,16 +306,17 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20260810-1323"></script>
+<script src="assets/js/config.js?v=20260810-1423"></script>
 <!-- EDITO en ligne. Sans séance d'édition ouverte, ce script s'arrête
      à sa première ligne : aucune requête, aucun style, aucun coût pour
      le visiteur. -->
-<script src="assets/js/edition.js?v=20260810-1323" defer></script>
-<script src="assets/js/i18n.js?v=20260810-1323" defer></script>
-<script src="assets/js/site-content.js?v=20260810-1323" defer></script>
-<script src="assets/js/nav.js?v=20260810-1323" defer></script>
-<script src="assets/js/newsletter.js?v=20260810-1323" defer></script>
-<script src="assets/js/mentions.js?v=20260810-1323" defer></script>
-<script src="assets/js/chat-widget.js?v=20260810-1323" defer></script>
+<script src="assets/js/edition.js?v=20260810-1423" defer></script>
+<script src="assets/js/i18n.js?v=20260810-1423" defer></script>
+<script src="assets/js/calendrier.js?v=20260810-1423" defer></script>
+<script src="assets/js/site-content.js?v=20260810-1423" defer></script>
+<script src="assets/js/nav.js?v=20260810-1423" defer></script>
+<script src="assets/js/newsletter.js?v=20260810-1423" defer></script>
+<script src="assets/js/mentions.js?v=20260810-1423" defer></script>
+<script src="assets/js/chat-widget.js?v=20260810-1423" defer></script>
 </body>
 </html>
