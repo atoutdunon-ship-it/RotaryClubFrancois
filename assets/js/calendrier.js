@@ -50,6 +50,23 @@
         && a.getDate() === b.getDate();
   }
 
+  /* Nombre de cases d'une grille mensuelle : le décalage jusqu'au premier
+     lundi affiché, plus les jours du mois, arrondi à la semaine entière.
+
+     Ce calcul remplace une condition de sortie qui devinait la fin du mois
+     en cours de boucle. Elle se déclenchait dès la première case pour neuf
+     mois sur douze : quand le mois commence un mardi ou plus tard, la
+     grille débute sur le mois précédent, la condition « on a changé de
+     mois » était vraie d'emblée, et le mois entier disparaissait. Seuls
+     les mois commençant un lundi s'affichaient. On ne devine plus : on
+     compte. */
+  function nombreDeCases(annee, mois) {
+    var premier = new Date(annee, mois, 1);
+    var decalage = (premier.getDay() + 6) % 7;        // lundi = 0
+    var jours = new Date(annee, mois + 1, 0).getDate();
+    return Math.ceil((decalage + jours) / 7) * 7;
+  }
+
   function iso(d) {
     return d.getFullYear() + "-"
          + String(d.getMonth() + 1).padStart(2, "0") + "-"
@@ -234,7 +251,8 @@
       html += '<div class="cal-entete"><span class="cal-entete__long">' + j
             + '</span><span class="cal-entete__court">' + JOURS_COURTS[i] + "</span></div>";
     });
-    for (var semaine = 0; semaine < 6; semaine++) {
+    var semaines = nombreDeCases(this.curseur.getFullYear(), this.curseur.getMonth()) / 7;
+    for (var semaine = 0; semaine < semaines; semaine++) {
       for (var jour = 0; jour < 7; jour++) {
         var horsMois = curseur.getMonth() !== this.curseur.getMonth();
         var classes = "cal-case" + (horsMois ? " cal-case--hors" : "")
@@ -245,9 +263,6 @@
         html += "</div>";
         curseur.setDate(curseur.getDate() + 1);
       }
-      // Sixième ligne inutile quand le mois tient en cinq semaines : on
-      // s'arrête plutôt que d'afficher une bande vide.
-      if (curseur.getMonth() !== this.curseur.getMonth() && semaine >= 4) break;
     }
     return html + "</div>";
   };
@@ -284,7 +299,8 @@
         html += '<div class="cal-mois__jour">' + j + "</div>";
       });
       var curseur = lundiDeLaSemaine(new Date(annee, mois, 1));
-      for (var i = 0; i < 42; i++) {
+      var cases = nombreDeCases(annee, mois);
+      for (var i = 0; i < cases; i++) {
         var horsMois = curseur.getMonth() !== mois;
         var liste = horsMois ? [] : this.duJour(curseur);
         var classes = "cal-mois__case" + (horsMois ? " cal-mois__case--hors" : "")
@@ -300,7 +316,6 @@
                 + ">" + curseur.getDate() + "</div>";
         }
         curseur.setDate(curseur.getDate() + 1);
-        if (curseur.getMonth() !== mois && curseur.getDate() > 7) break;
       }
       html += "</div></div>";
     }
