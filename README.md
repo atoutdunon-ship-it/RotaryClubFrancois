@@ -1,0 +1,152 @@
+# YOSEI-DIF
+
+Nom de code : **YOSEI-DIF**.
+Préparation au Diplôme d'Instructeur Fédéral, spécialité **Yoseikan Budo**.
+
+## Un seul dossier, un seul niveau
+
+Tous les fichiers sont à plat. Aucun sous-dossier. Pour mettre en ligne :
+ouvrir le dossier, **Cmd + A**, glisser dans GitHub. Une seule opération.
+
+| Fichier | Rôle |
+|---|---|
+| `index.html` | **le site**, complet et autonome — c'est ce que GitHub publie |
+| `.nojekyll` | fichier vide requis par GitHub Pages |
+| `build.py` | reconstruit `index.html` |
+| `style.css` | charte : noir + bleu navy + blanc |
+| `app.js` | moteur applicatif |
+| `*.json` | les données — c'est ici qu'on édite le contenu |
+| `corriges.json` | les 8 corrigés types |
+| `make_*.py` | scripts de production des données |
+| `Ouvrir-le-site.command` / `.bat` | ouvrir le site en local |
+| `Regenerer-le-site.command` | reconstruire après modification |
+
+`index.html` est **autonome** : ni serveur, ni dépendance, fonctionne hors ligne.
+CSS et JavaScript y sont intégrés — `style.css` et `app.js` ne servent qu'à la
+reconstruction, jamais à l'affichage.
+
+## Mettre en ligne sur GitHub Pages
+
+1. Créer un dépôt sur GitHub.
+2. **Add file → Upload files**, puis glisser tout le contenu du dossier.
+3. **Settings → Pages → Source : Deploy from a branch → `main` / `(root)`**.
+
+Le site est en ligne en une à deux minutes.
+
+Aucun workflow, aucune configuration : `index.html` et `.nojekyll` sont à la
+racine, c'est exactement ce qu'attend GitHub Pages.
+
+### Le fichier `.nojekyll`
+
+Vide, au nom **imposé** — le renommer le rend inopérant. Il neutralise le
+moteur Jekyll de GitHub, qui sinon ignore les fichiers commençant par `_`.
+
+Commençant par un point, il est masqué par le Finder. **Cmd + Maj + .** l'affiche
+(le même raccourci le remasque). **Affichez-le avant de faire Cmd + A**, sinon il
+ne sera pas sélectionné et ne partira pas sur GitHub.
+
+## Modifier le contenu
+
+On n'édite jamais `index.html` à la main : il est régénéré et vos modifications
+seraient perdues.
+
+| Je veux changer… | J'édite… |
+|---|---|
+| les thèmes de tirage au sort | `themes.json` |
+| les questions du jury | `jury.json` |
+| la banque d'exercices | `exercices.json` |
+| les cycles de la saison | `saison.json` |
+| les corrigés types | `make_corriges.py` puis `python3 make_corriges.py` |
+| la trame du plan de séance | `plan_modele.json` |
+| le contenu des modules | `modules.json` |
+| les quiz | `quiz.json` |
+| l'apparence | `style.css` |
+| le comportement | `app.js` |
+
+Puis double-clic sur `Regenerer-le-site.command`, ou :
+
+```bash
+python3 build.py
+```
+
+`config.json` porte les réglages généraux. `extrait_pages_karate.json`,
+`quiz_tronc_commun.json` et `fiches_tronc_commun.json` sont des extraits
+techniques alimentant `make_modules.py` et `make_quiz.py` : ne pas les éditer.
+
+## Le dispositif pédagogique
+
+Le DIF n'évalue pas un stock de connaissances mais une **compétence** : concevoir,
+animer, planifier et adapter un enseignement. Le site est donc organisé autour de
+six outils actifs, les modules de connaissances venant en appui.
+
+| Outil | Ce qu'il travaille | Objectif DIF |
+|---|---|---|
+| A — Simulateur d'épreuve | 16 thèmes tirés au sort, chronomètre 30′ / 20′ / 10′ | 1, 3 |
+| B — Plan de séance au format officiel | En-tête + tableau 4 colonnes FFKDA, impression A4 paysage | 1 |
+| C — Entretien avec le jury | 81 questions en 7 domaines, éléments attendus | 1, 3, 4, 5 |
+| D — Planification de saison | 5 cycles annuels éditables | 2 |
+| E — Banque d'exercices | 12 situations filtrables, critères et variables | 1, 3 |
+| F — Corrigés types d'examen | 8 épreuves traitées de bout en bout, imprimables | 1, 2, 3, 4, 5 |
+
+Évaluation : **QCM de préformation** (40 questions tirées dans les 95 issues des fiches
+officielles UF1 et UF2) et **examen blanc** par module.
+
+### Les corrigés types
+
+Huit épreuves complètes : 3 enfants, 3 ados/adultes, 1 baby, 1 public adapté.
+Chacune couvre les trois phases — analyse du thème, objectif opérationnel, critère
+observable, sécurité, plan minuté séquence par séquence, régulation et plan B, ce que
+le jury observe, quatre questions d'entretien avec réponses modèles, erreurs à éviter.
+
+**Méthode d'usage.** Tirez d'abord un thème au sort dans le simulateur, préparez votre
+propre plan en 30 minutes, *puis seulement* ouvrez le corrigé et comparez. Lu avant
+l'effort, un corrigé ne vous apprend rien : il vous rassure.
+
+## Sources officielles
+
+Les modules 03 et 04 sont construits sur les **fiches de préformation DAF/DIF** du
+Service Formation de la FFKDA, publiées par le Comité Départemental de Lot-et-Garonne :
+
+- **UF1a, UF1b, UF1c** (M. Robert DI MEO) — note préliminaire sur l'enseignement,
+  préparation d'une séance, méthode pour établir un plan de séance type
+- **UF2 2A** — se situer dans la filière de formation fédérale
+- **UF2 2B** items 1 à 7 — environnement du club
+- **UF2 2C** items 1 à 7 — environnement fédéral
+
+Le **plan de séance suit le format officiel** : en-tête d'identification, puis tableau à
+quatre colonnes — Objectifs poursuivis, Description des exercices, Organisation matérielle
+et consignes, Minutage.
+
+Les exemples techniques des fiches sont en terminologie karaté. Le site les cite tels quels,
+**puis les transpose en Yoseikan Budo** : la méthode fédérale est transversale, seul le
+vocabulaire change.
+
+> Les montants, volumes horaires et références réglementaires évoluent. Les fiches
+> consultées datent de 2022 : vérifiez-les dans les documents de la saison en cours.
+
+## État du contenu
+
+| Module | Statut | Source |
+|---|---|---|
+| 01 — Yoseikan Budo : histoire, filiation, principes | à compléter | vos documents |
+| 02 — Contenu technique Yoseikan Budo | à compléter | vos documents |
+| 03 — Enseignement et animation (UF1) | prêt | fiches officielles |
+| 04 — Environnement associatif et fédéral (UF2) | prêt | fiches officielles |
+| 05 — Anatomie, physiologie et sécurité | prêt | tronc commun |
+| 06 — Vocabulaire et terminologie | à compléter | vos documents |
+
+Les modules 01, 02 et 06 relèvent du **programme technique propre au Yoseikan Budo**,
+qui ne figure pas dans les fiches fédérales génériques. Ils attendent vos documents :
+programme technique, passages de grade, lexique.
+
+## Données personnelles
+
+Plans de séance, planification et progression sont stockés dans le navigateur.
+La page **Sauvegarde et restauration** du site permet de tout exporter et
+réimporter au format JSON. Exportez avant tout changement de navigateur.
+
+## Réimplantation
+
+Pour décliner ce dispositif vers une autre discipline ou une autre formation :
+citez le nom de code **YOSEI-DIF**. Seuls les `.json` changent ; `build.py`,
+`style.css` et `app.js` sont indépendants de la discipline.

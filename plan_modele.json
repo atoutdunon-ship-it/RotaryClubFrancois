@@ -1,0 +1,20 @@
+{
+ "source": "FFKDA — Fiche de préformation UF1c « Méthode pour établir un plan de séance type », cours de M. Robert DI MEO, Service Formation.",
+ "entete": [
+  ["nom", "Nom", "text", "Écrire lisiblement : nécessaire au retour de vos exercices corrigés."],
+  ["prenom", "Prénom", "text", ""],
+  ["theme", "Thème de la séance", "textarea", "Indique de manière GÉNÉRIQUE le sujet traité. Il ne précise ni la technique exacte, ni la manière de l'utiliser. Exemple officiel : « perfectionnement des techniques de poing en situation d'opposition »."],
+  ["objectif", "Objectif principal de la séance", "textarea", "Indique PRÉCISÉMENT l'élément technique étudié, en cohérence avec le thème. Exemple officiel : « optimiser la réactivité d'une attaque en coup de poing avant (mae-te) et arrière (gyaku zuki) »."],
+  ["eleves", "Élèves concernés", "text", "Le public ET son niveau de pratique. Exemple officiel : « public enfants (pupilles) niveau débutant »."],
+  ["public", "Catégorie", "select_public", "Détermine la durée de l'épreuve."],
+  ["duree", "Durée de la séance", "text", "À déterminer en tenant compte de l'âge du public. Exemple officiel : juniors 16-17 ans = 1 h 30."]
+ ],
+ "colonnes": [
+  ["objectifs", "Objectifs poursuivis", "Ils définissent des paliers d'apprentissage. Chaque palier exprime une compétence à développer : ce que l'apprenant devra savoir faire à l'issue de cette séquence. L'énoncé doit être UNIVOQUE — « il est impossible pour l'élève de faire autre chose que ce que vous lui avez demandé de faire »."],
+  ["exercices", "Description des exercices", "Décrire succinctement l'exercice proposé, en cohérence avec l'objectif pédagogique décrit."],
+  ["organisation", "Organisation matérielle et consignes", "Le matériel pédagogique utilisé, puis les points essentiels à respecter : critères de réalisation technique, rapidité, puissance, intensité de l'effort, temps de récupération."],
+  ["minutage", "Minutage", "Le temps nécessaire à la réalisation de l'exercice."]
+ ],
+ "lignes_defaut": 6,
+ "rappel_ppo": "L'objectif poursuivi décrit le produit final de l'action : ce que l'apprenant doit être capable de réaliser à la fin de cette séquence d'apprentissage. Cette manière de raisonner découle de la pédagogie par objectifs (PPO) et s'applique à tous les compartiments du plan de séance."
+}
